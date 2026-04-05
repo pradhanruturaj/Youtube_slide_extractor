@@ -1,400 +1,192 @@
-<!-- templates/index.html -->
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>YouTube Slide Extractor</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
             padding: 20px;
+            background: #f0f0f0;
         }
-        
         .container {
             background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            padding: 40px;
-            max-width: 600px;
-            width: 100%;
-        }
-        
-        h1 {
-            color: #333;
-            margin-bottom: 10px;
-            font-size: 28px;
-        }
-        
-        .subtitle {
-            color: #666;
-            margin-bottom: 30px;
-            font-size: 14px;
-        }
-        
-        .form-group {
-            margin-bottom: 20px;
-        }
-        
-        label {
-            display: block;
-            margin-bottom: 8px;
-            color: #555;
-            font-weight: 500;
-        }
-        
-        input[type="text"],
-        input[type="number"] {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #e0e0e0;
+            padding: 30px;
             border-radius: 10px;
-            font-size: 16px;
-            transition: border-color 0.3s;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
-        
-        input[type="text"]:focus,
-        input[type="number"]:focus {
-            outline: none;
-            border-color: #667eea;
+        input, button {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
         }
-        
-        .range-group {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-        
-        .range-group input {
-            flex: 1;
-        }
-        
-        .range-value {
-            min-width: 50px;
-            text-align: center;
-            font-weight: bold;
-            color: #667eea;
-        }
-        
         button {
-            width: 100%;
-            padding: 14px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #007bff;
             color: white;
-            border: none;
-            border-radius: 10px;
-            font-size: 16px;
-            font-weight: 600;
             cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
+            border: none;
         }
-        
-        button:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        button:hover {
+            background: #0056b3;
         }
-        
-        button:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-        }
-        
-        .progress-container {
-            margin-top: 30px;
+        .progress {
             display: none;
+            margin-top: 20px;
         }
-        
         .progress-bar {
             width: 100%;
             height: 30px;
             background: #f0f0f0;
-            border-radius: 15px;
+            border-radius: 5px;
             overflow: hidden;
-            margin-bottom: 10px;
         }
-        
         .progress-fill {
             height: 100%;
-            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            background: #28a745;
             width: 0%;
             transition: width 0.3s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            line-height: 30px;
             color: white;
-            font-size: 12px;
-            font-weight: bold;
+            text-align: center;
         }
-        
-        .status-message {
-            color: #666;
-            font-size: 14px;
+        .message {
             margin-top: 10px;
-            text-align: center;
+            padding: 10px;
+            background: #e9ecef;
+            border-radius: 5px;
         }
-        
-        .download-section {
-            margin-top: 20px;
-            text-align: center;
+        .download {
             display: none;
-        }
-        
-        .download-btn {
-            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-            margin-top: 10px;
-        }
-        
-        .error {
-            color: #e74c3c;
-            text-align: center;
-            margin-top: 10px;
-        }
-        
-        .info {
-            background: #f8f9fa;
-            padding: 15px;
-            border-radius: 10px;
             margin-top: 20px;
-            font-size: 13px;
-            color: #666;
         }
-        
-        .info h3 {
-            color: #333;
-            margin-bottom: 10px;
-            font-size: 14px;
-        }
-        
-        .info ul {
-            margin-left: 20px;
-        }
-        
-        .info li {
-            margin: 5px 0;
+        .error {
+            color: red;
+            margin-top: 10px;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>🎬 YouTube Slide Extractor</h1>
-        <div class="subtitle">Extract slides from lecture videos automatically</div>
+        <h1>📹 YouTube Slide Extractor</h1>
+        <p>Extract slides from YouTube videos into a PDF</p>
         
         <form id="extractForm">
-            <div class="form-group">
-                <label>YouTube URL</label>
-                <input type="text" id="youtubeUrl" placeholder="https://www.youtube.com/watch?v=..." required>
-            </div>
-            
-            <div class="form-group">
-                <label>Extraction Interval (seconds)</label>
-                <div class="range-group">
-                    <input type="range" id="interval" min="1" max="60" value="10">
-                    <span class="range-value" id="intervalValue">10</span>
-                </div>
-            </div>
-            
-            <div class="form-group">
-                <label>JPEG Quality (1-100)</label>
-                <div class="range-group">
-                    <input type="range" id="quality" min="1" max="100" value="95">
-                    <span class="range-value" id="qualityValue">95</span>
-                </div>
-            </div>
-            
-            <button type="submit" id="submitBtn">🚀 Start Extraction</button>
+            <input type="text" id="url" placeholder="YouTube URL" required>
+            <input type="number" id="interval" value="10" step="1" min="1" max="60">
+            <button type="submit">Start Extraction</button>
         </form>
         
-        <div class="progress-container" id="progressContainer">
+        <div class="progress" id="progress">
             <div class="progress-bar">
                 <div class="progress-fill" id="progressFill">0%</div>
             </div>
-            <div class="status-message" id="statusMessage">Processing...</div>
+            <div class="message" id="message"></div>
         </div>
         
-        <div class="download-section" id="downloadSection">
-            <button class="download-btn" id="downloadBtn">📥 Download PDF</button>
-            <button id="newExtractionBtn" style="margin-top: 10px; background: #6c757d;">🔄 New Extraction</button>
+        <div class="download" id="download">
+            <button onclick="downloadPDF()">📥 Download PDF</button>
+            <button onclick="resetForm()">🔄 New Extraction</button>
         </div>
         
-        <div class="info">
-            <h3>📌 Notes:</h3>
-            <ul>
-                <li>Extracts frames at regular intervals from YouTube videos</li>
-                <li>Creates a PDF containing all extracted slides</li>
-                <li>Works best with lecture videos and presentations</li>
-                <li>Processing time depends on video length and interval</li>
-            </ul>
-        </div>
+        <div id="error" class="error"></div>
     </div>
-    
+
     <script>
         let currentJobId = null;
-        let statusCheckInterval = null;
-        
-        // Update range input values
-        document.getElementById('interval').addEventListener('input', (e) => {
-            document.getElementById('intervalValue').textContent = e.target.value;
-        });
-        
-        document.getElementById('quality').addEventListener('input', (e) => {
-            document.getElementById('qualityValue').textContent = e.target.value;
-        });
-        
-        // Handle form submission
-        document.getElementById('extractForm').addEventListener('submit', async (e) => {
+        let interval = null;
+
+        document.getElementById('extractForm').onsubmit = async (e) => {
             e.preventDefault();
             
-            const youtubeUrl = document.getElementById('youtubeUrl').value;
-            const intervalSeconds = document.getElementById('interval').value;
-            const quality = document.getElementById('quality').value;
+            const url = document.getElementById('url').value;
+            const intervalSec = document.getElementById('interval').value;
             
-            // Disable form
-            const submitBtn = document.getElementById('submitBtn');
-            submitBtn.disabled = true;
-            submitBtn.textContent = '⏳ Starting...';
+            document.getElementById('error').innerHTML = '';
+            document.getElementById('progress').style.display = 'block';
+            document.getElementById('download').style.display = 'none';
+            
+            const formData = new URLSearchParams();
+            formData.append('youtube_url', url);
+            formData.append('interval_seconds', intervalSec);
+            formData.append('quality', 85);
             
             try {
-                const formData = new URLSearchParams();
-                formData.append('youtube_url', youtubeUrl);
-                formData.append('interval_seconds', intervalSeconds);
-                formData.append('quality', quality);
-                
                 const response = await fetch('/extract', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                    },
+                    headers: {'Content-Type': 'application/x-www-form-urlencoded'},
                     body: formData
                 });
                 
                 const data = await response.json();
-                
                 if (response.ok) {
                     currentJobId = data.job_id;
-                    showProgress();
-                    startStatusCheck();
+                    startPolling();
                 } else {
                     showError(data.error);
-                    resetForm();
                 }
             } catch (error) {
                 showError('Failed to start extraction');
-                resetForm();
             }
-        });
+        };
         
-        function showProgress() {
-            document.getElementById('progressContainer').style.display = 'block';
-            document.getElementById('downloadSection').style.display = 'none';
-        }
-        
-        function startStatusCheck() {
-            if (statusCheckInterval) {
-                clearInterval(statusCheckInterval);
-            }
+        function startPolling() {
+            if (interval) clearInterval(interval);
             
-            statusCheckInterval = setInterval(async () => {
+            interval = setInterval(async () => {
                 try {
                     const response = await fetch(`/status/${currentJobId}`);
                     const data = await response.json();
                     
                     if (response.ok) {
-                        updateProgress(data);
+                        document.getElementById('progressFill').style.width = `${data.progress}%`;
+                        document.getElementById('progressFill').textContent = `${data.progress}%`;
+                        document.getElementById('message').textContent = data.message;
                         
                         if (data.status === 'completed') {
-                            clearInterval(statusCheckInterval);
-                            showDownload();
+                            clearInterval(interval);
+                            document.getElementById('progress').style.display = 'none';
+                            document.getElementById('download').style.display = 'block';
                         } else if (data.status === 'failed') {
-                            clearInterval(statusCheckInterval);
+                            clearInterval(interval);
                             showError(data.message);
-                            resetForm();
                         }
                     } else {
-                        clearInterval(statusCheckInterval);
+                        clearInterval(interval);
                         showError(data.error);
-                        resetForm();
                     }
                 } catch (error) {
-                    clearInterval(statusCheckInterval);
+                    clearInterval(interval);
                     showError('Status check failed');
-                    resetForm();
                 }
             }, 2000);
         }
         
-        function updateProgress(data) {
-            const progressFill = document.getElementById('progressFill');
-            const statusMessage = document.getElementById('statusMessage');
-            
-            const progress = Math.round(data.progress || 0);
-            progressFill.style.width = `${progress}%`;
-            progressFill.textContent = `${progress}%`;
-            
-            statusMessage.textContent = data.message;
-        }
-        
-        function showDownload() {
-            document.getElementById('progressContainer').style.display = 'none';
-            document.getElementById('downloadSection').style.display = 'block';
-            document.getElementById('submitBtn').disabled = false;
-            document.getElementById('submitBtn').textContent = '🚀 Start Extraction';
-        }
-        
-        function showError(message) {
-            const errorDiv = document.createElement('div');
-            errorDiv.className = 'error';
-            errorDiv.textContent = `❌ ${message}`;
-            document.querySelector('.container').insertBefore(errorDiv, document.querySelector('.info'));
-            
-            setTimeout(() => {
-                errorDiv.remove();
-            }, 5000);
-        }
-        
-        function resetForm() {
-            document.getElementById('submitBtn').disabled = false;
-            document.getElementById('submitBtn').textContent = '🚀 Start Extraction';
-            document.getElementById('progressContainer').style.display = 'none';
-        }
-        
-        // Handle download
-        document.getElementById('downloadBtn').addEventListener('click', () => {
+        function downloadPDF() {
             if (currentJobId) {
                 window.location.href = `/download/${currentJobId}`;
             }
-        });
+        }
         
-        // Handle new extraction
-        document.getElementById('newExtractionBtn').addEventListener('click', () => {
-            document.getElementById('extractForm').reset();
-            document.getElementById('youtubeUrl').value = '';
+        function resetForm() {
+            document.getElementById('url').value = '';
             document.getElementById('interval').value = '10';
-            document.getElementById('intervalValue').textContent = '10';
-            document.getElementById('quality').value = '95';
-            document.getElementById('qualityValue').textContent = '95';
-            document.getElementById('downloadSection').style.display = 'none';
-            document.getElementById('progressContainer').style.display = 'none';
-            
-            if (statusCheckInterval) {
-                clearInterval(statusCheckInterval);
-            }
-            
+            document.getElementById('progress').style.display = 'none';
+            document.getElementById('download').style.display = 'none';
+            document.getElementById('error').innerHTML = '';
+            if (interval) clearInterval(interval);
             if (currentJobId) {
-                fetch(`/cleanup/${currentJobId}`, { method: 'DELETE' });
+                fetch(`/cleanup/${currentJobId}`, {method: 'DELETE'});
                 currentJobId = null;
             }
-        });
+        }
+        
+        function showError(msg) {
+            document.getElementById('error').innerHTML = `❌ ${msg}`;
+            document.getElementById('progress').style.display = 'none';
+        }
     </script>
 </body>
 </html>
