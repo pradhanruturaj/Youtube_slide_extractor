@@ -1,0 +1,5 @@
+Flask
+opencv-python-headless
+img2pdf
+yt-dlp
+numpy
