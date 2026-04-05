@@ -3,3 +3,6 @@ opencv-python-headless
 img2pdf
 yt-dlp
 numpy
+fastapi
+uvicorn
+gunicprn
